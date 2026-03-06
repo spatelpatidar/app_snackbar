@@ -10,7 +10,7 @@ A beautiful, fully customizable Flutter SnackBar utility with **4 types**, **act
 ---
 ## Demo
 
-<video src="demo/demo_video.webm" controls width="320"></video>
+<video src="demo/demo_video.mp4" controls width="320"></video>
 
 ## Features
 
