@@ -8,6 +8,9 @@
 A beautiful, fully customizable Flutter SnackBar utility with **4 types**, **action buttons**, **loading states**, **queue support**, **slide/fade animations**, **top/bottom positioning**, and global **Material 3** theme override.
 
 ---
+## Demo
+
+<video src="demo/demo_video.webm" controls width="320"></video>
 
 ## Features
 
