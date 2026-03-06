@@ -260,22 +260,6 @@ AppSnackBar.theme = const AppSnackBarTheme(
 | `SnackBarPosition` | `bottom`, `top` |
 | `SnackBarAnimation` | `slide`, `fade`, `none` |
 
----
-
-## pub.dev Publishing
-
-```bash
-# Validate first
-dart pub publish --dry-run
-
-# Publish
-dart pub publish
-```
-
-Before publishing:
-1. Update `homepage` and `repository` in `pubspec.yaml`
-2. Add your name to `LICENSE`
-3. Add a screenshot to `screenshots/` folder
 
 ---
 
