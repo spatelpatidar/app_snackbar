@@ -6,9 +6,9 @@ description: >-
   top/bottom positioning, rootScaffoldMessengerKey support, and global
   Material 3 theme override.
 version: 1.0.0
-homepage: https://github.com/spatel/app_snackbar
-repository: https://github.com/spatel/app_snackbar
-issue_tracker: https://github.com/spatel/app_snackbar/issues
+homepage: https://github.com/spatelpatidar/app_snackbar
+repository: https://github.com/spatelpatidar/app_snackbar
+issue_tracker: https://github.com/spatelpatidar/app_snackbar/issues
 
 topics:
   - snackbar
@@ -16,9 +16,9 @@ topics:
   - notification
   - material
 
-#screenshots:
-#  - description: 'AppSnackBar types showcase'
-#    path: screenshots/types.png
+demo:
+  - description: 'AppSnackBar types showcase'
+    path: demo/demo_video.webm
 
 environment:
   sdk: '>=3.2.0 <4.0.0'
