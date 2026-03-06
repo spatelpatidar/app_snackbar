@@ -5,7 +5,7 @@ description: >-
   action buttons, loading states, queue support, slide/fade animations,
   top/bottom positioning, rootScaffoldMessengerKey support, and global
   Material 3 theme override.
-version: 1.0.0
+version: 1.0.1
 homepage: https://github.com/spatelpatidar/app_snackbar
 repository: https://github.com/spatelpatidar/app_snackbar
 issue_tracker: https://github.com/spatelpatidar/app_snackbar/issues
