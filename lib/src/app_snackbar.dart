@@ -18,6 +18,10 @@ class AppSnackBar {
 
   // Active overlay entries
   static OverlayEntry? _currentOverlay;
+  static Timer? _dismissTimer; // cancellable timer
+
+  // ✅ Overlay pending queue — naya snackbar purane ke baad aayega automatically
+  static final List<_OverlayArgs> _overlayPendingQueue = [];
 
   // ── Core show ─────────────────────────────────────────────────────────────
 
@@ -153,48 +157,87 @@ class AppSnackBar {
       return;
     }
 
-    // Remove existing overlay
-    _removeCurrentOverlay();
+    final args = _OverlayArgs(
+      context: overlayContext,
+      message: message,
+      icon: icon,
+      backgroundColor: backgroundColor,
+      borderRadius: borderRadius,
+      elevation: elevation,
+      borderColor: borderColor,
+      borderWidth: borderWidth,
+      width: width,       // ✅ pass karo
+      height: height,     // ✅ pass karo
+      animation: animation,
+      duration: duration,
+      showClose: showClose,
+      textStyle: textStyle,
+      position: position,
+      leading: leading,
+      trailing: trailing,
+      onClose: onClose,
+    );
 
+    // ✅ Agar abhi koi snackbar chal raha hai → queue mein daalo
+    if (_currentOverlay != null) {
+      _overlayPendingQueue.add(args);
+      return;
+    }
+
+    _showFromArgs(args);
+  }
+
+  // ── Actual overlay insert ─────────────────────────────────────────────────
+
+  static void _showFromArgs(_OverlayArgs a) {
     late OverlayEntry entry;
     entry = OverlayEntry(
       builder: (_) => _SnackBarOverlay(
-        message: message,
-        icon: icon,
-        backgroundColor: backgroundColor,
-        borderRadius: borderRadius,
-        elevation: elevation,
-        borderColor: borderColor,
-        borderWidth: borderWidth,
-        width: width,
-        height: height,
-        animation: animation,
+        message: a.message,
+        icon: a.icon,
+        backgroundColor: a.backgroundColor,
+        borderRadius: a.borderRadius,
+        elevation: a.elevation,
+        borderColor: a.borderColor,
+        borderWidth: a.borderWidth,
+        width: a.width,     // ✅ use karo
+        height: a.height,   // ✅ use karo
+        animation: a.animation,
         animationDuration: theme.animationDuration,
-        textStyle: textStyle,
-        showClose: showClose,
-        leading: leading,
-        trailing: trailing,
-        position: position,
+        textStyle: a.textStyle,
+        showClose: a.showClose,
+        leading: a.leading,
+        trailing: a.trailing,
+        position: a.position,
         onDismiss: () {
           _removeCurrentOverlay();
-          onClose?.call();
+          a.onClose?.call();
         },
       ),
     );
 
     _currentOverlay = entry;
-    Overlay.of(overlayContext).insert(entry);
+    Overlay.of(a.context).insert(entry);
 
-    // Auto dismiss
-    Future.delayed(duration, _removeCurrentOverlay);
+    // Cancellable timer
+    _dismissTimer?.cancel();
+    _dismissTimer = Timer(a.duration, _removeCurrentOverlay);
   }
 
   static void _removeCurrentOverlay() {
-    // _currentOverlay?.remove();
+    _dismissTimer?.cancel();
+    _dismissTimer = null;
     if (_currentOverlay != null && _currentOverlay!.mounted) {
       _currentOverlay!.remove();
     }
     _currentOverlay = null;
+
+    // ✅ Queue mein kuch hai? → next show karo
+    if (_overlayPendingQueue.isNotEmpty) {
+      final next = _overlayPendingQueue.removeAt(0);
+      // Thoda gap dene ke liye — feels natural
+      Timer(const Duration(milliseconds: 150), () => _showFromArgs(next));
+    }
   }
 
   // ── With action button ─────────────────────────────────────────────────────
@@ -309,7 +352,7 @@ class AppSnackBar {
       String message, {
         SnackBarType type = SnackBarType.info,
         SnackBarPosition position = SnackBarPosition.bottom,
-        Duration duration = const Duration(seconds: 30),
+        Duration duration = const Duration(seconds: 10),
         Color? backgroundColor,
         TextStyle? textStyle,
         double? fontSize,
@@ -358,8 +401,14 @@ class AppSnackBar {
 
   // ── Queue ──────────────────────────────────────────────────────────────────
 
-  static void clearQueue() => _queue?.clear();
-  static int get queueLength => _queue?.length ?? 0;
+  static void clearQueue() {
+    _queue?.clear();
+    _overlayPendingQueue.clear(); // ✅ overlay queue bhi clear
+    _removeCurrentOverlay();
+  }
+
+  static int get queueLength =>
+      (_queue?.length ?? 0) + _overlayPendingQueue.length;
 
   // ── Hide ──────────────────────────────────────────────────────────────────
 
@@ -753,6 +802,51 @@ class _SnackBarOverlayState extends State<_SnackBarOverlay>
     );
   }
 }
+
+// ── Internal data class for overlay queue ─────────────────────────────────────
+
+class _OverlayArgs {
+  final BuildContext context;
+  final String message;
+  final IconData icon;
+  final Color backgroundColor;
+  final double borderRadius;
+  final double elevation;
+  final Color? borderColor;
+  final double borderWidth;
+  final double? width;    // ✅ back aa gaya
+  final double? height;   // ✅ back aa gaya
+  final SnackBarAnimation animation;
+  final Duration duration;
+  final bool showClose;
+  final TextStyle textStyle;
+  final SnackBarPosition position;
+  final Widget? leading;
+  final Widget? trailing;
+  final VoidCallback? onClose;
+
+  const _OverlayArgs({
+    required this.context,
+    required this.message,
+    required this.icon,
+    required this.backgroundColor,
+    required this.borderRadius,
+    required this.elevation,
+    required this.borderWidth,
+    required this.animation,
+    required this.duration,
+    required this.showClose,
+    required this.textStyle,
+    required this.position,
+    this.width,
+    this.height,
+    this.borderColor,
+    this.leading,
+    this.trailing,
+    this.onClose,
+  });
+}
+
 ///==================
 // core class + queue logic
 // import 'package:flutter/material.dart';
