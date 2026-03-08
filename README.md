@@ -19,12 +19,10 @@ https://github.com/user-attachments/assets/f18edc5d-7538-4c7c-a588-a3fffa58d59f
 
 ## Screenshots
 
-<p float="left">
-  <img src="screenshots/showcase.png" width="220"/>
-  <img src="screenshots/error.png" width="220"/>
-  <img src="screenshots/top_position.png" width="220"/>
-  <img src="screenshots/code_preview.png" width="220"/>
-</p>
+![Showcase](https://raw.githubusercontent.com/spatelpatidar/app_snackbar/main/screenshots/showcase.png)
+![Error](https://raw.githubusercontent.com/spatelpatidar/app_snackbar/main/screenshots/error.png)
+![Top Position](https://raw.githubusercontent.com/spatelpatidar/app_snackbar/main/screenshots/top_position.png)
+![Code Preview](https://raw.githubusercontent.com/spatelpatidar/app_snackbar/main/screenshots/code_preview.png)
 
 
 ---
@@ -53,7 +51,7 @@ https://github.com/user-attachments/assets/f18edc5d-7538-4c7c-a588-a3fffa58d59f
 
 ```yaml
 dependencies:
-  app_snackbar: ^1.0.2
+  app_snackbar: ^1.0.3
 ```
 
 ```dart

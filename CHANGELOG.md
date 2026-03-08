@@ -1,3 +1,9 @@
+## 1.0.3
+
+### ✨ Documentation Fix
+
+- Fixed: screenshots not showing on pub.dev — replaced HTML <img> tags with GitHub raw URLs
+
 ## 1.0.2
 
 ### ✨ New Features

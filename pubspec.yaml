@@ -1,10 +1,9 @@
 # Flutter 3.16+, pub.dev metadata
 name: app_snackbar
 description: >-
-  A beautiful, fully customizable Flutter SnackBar utility. Supports 4 types,
-  action buttons, loading states, queue management, slide/fade animations,
-  and top/bottom positioning with Material 3 support.
-version: 1.0.2
+  Beautiful, customizable Flutter SnackBar with 4 types, animations, queue,
+    timer bar, action buttons, loading states, and Material 3 support.
+version: 1.0.3
 homepage: https://github.com/spatelpatidar/app_snackbar
 repository: https://github.com/spatelpatidar/app_snackbar
 issue_tracker: https://github.com/spatelpatidar/app_snackbar/issues
