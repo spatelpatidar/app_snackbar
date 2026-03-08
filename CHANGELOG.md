@@ -1,3 +1,28 @@
+## 1.0.2
+
+### ✨ New Features
+
+**Timer Bar**
+- `showTimer` — shows a countdown progress bar at the bottom of the snackbar
+- `timerColor` — customize the timer bar color per-call
+- `AppSnackBarTheme.showTimer` — enable timer globally for all snackbars
+- `AppSnackBarTheme.timerColor` — set default timer bar color in theme
+
+**Duration Control**
+- `AppSnackBarTheme.defaultDuration` — set a global default duration once in theme
+- Per-call `duration` always takes priority over theme default
+- Fallback chain: per-call → theme default → built-in default (3s)
+
+---
+
+## 1.0.1
+
+### 🐛 Bug Fix
+
+- Fixed: showing a new snackbar while one was already visible caused the old one to be abruptly removed at the same time, resulting in both dismissing together — now the old snackbar cleanly finishes before the new one appears
+
+---
+
 ## 1.0.0
 
 ### ✨ Initial stable release

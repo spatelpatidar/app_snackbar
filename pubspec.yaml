@@ -1,11 +1,10 @@
 # Flutter 3.16+, pub.dev metadata
 name: app_snackbar
 description: >-
-  A beautiful, fully customizable Flutter SnackBar utility with 4 types,
-  action buttons, loading states, queue support, slide/fade animations,
-  top/bottom positioning, rootScaffoldMessengerKey support, and global
-  Material 3 theme override.
-version: 1.0.1
+  A beautiful, fully customizable Flutter SnackBar utility. Supports 4 types,
+  action buttons, loading states, queue management, slide/fade animations,
+  and top/bottom positioning with Material 3 support.
+version: 1.0.2
 homepage: https://github.com/spatelpatidar/app_snackbar
 repository: https://github.com/spatelpatidar/app_snackbar
 issue_tracker: https://github.com/spatelpatidar/app_snackbar/issues
@@ -15,10 +14,17 @@ topics:
   - ui
   - notification
   - material
+  - overlay
 
-demo:
-  - description: 'AppSnackBar types showcase'
-    path: demo/demo_video.webm
+screenshots:
+  - description: 'Main Showcase: All SnackBar types and styles'
+    path: screenshots/showcase.png
+  - description: 'Error State: Premium error notification style'
+    path: screenshots/error.png
+  - description: 'Top Position: Dynamic positioning at the top'
+    path: screenshots/top_position.png
+  - description: 'Custom Code: Real-time code preview and editor'
+    path: screenshots/code_preview.png
 
 environment:
   sdk: '>=3.2.0 <4.0.0'
@@ -34,3 +40,4 @@ dev_dependencies:
   flutter_lints: ^4.0.0
 
 flutter:
+  uses-material-design: true

@@ -5,12 +5,29 @@
 [![Flutter](https://img.shields.io/badge/Flutter-3.16+-blue.svg)](https://flutter.dev)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
-A beautiful, fully customizable Flutter SnackBar utility with **4 types**, **action buttons**, **loading states**, **queue support**, **slide/fade animations**, **top/bottom positioning**, and global **Material 3** theme override.
+A beautiful, fully customizable Flutter SnackBar utility with **4 types**, **action buttons**, **loading states**, **queue support**, **slide/fade animations**, **top/bottom positioning**, **countdown timer bar**, and global **Material 3** theme override.
 
 ---
+
 ## Demo
 
-<video src="demo/demo_video.webm" controls width="320"></video>
+https://github.com/user-attachments/assets/f18edc5d-7538-4c7c-a588-a3fffa58d59f
+
+<video src="demo/demo_video.mp4" controls width="320"></video>
+
+---
+
+## Screenshots
+
+<p float="left">
+  <img src="screenshots/showcase.png" width="220"/>
+  <img src="screenshots/error.png" width="220"/>
+  <img src="screenshots/top_position.png" width="220"/>
+  <img src="screenshots/code_preview.png" width="220"/>
+</p>
+
+
+---
 
 ## Features
 
@@ -22,6 +39,8 @@ A beautiful, fully customizable Flutter SnackBar utility with **4 types**, **act
 | **Queue** | Show one after another |
 | **Animations** | Slide, Fade, or None |
 | **Position** | Top or Bottom |
+| **Timer bar** | Countdown progress bar with custom color |
+| **Duration control** | Per-call or global theme default |
 | **messengerKey** | Visible above bottom sheets |
 | **Global theme** | Override colors, icons, fonts app-wide |
 | **Per-call overrides** | `backgroundColor`, `textStyle`, `fontSize`, `borderRadius`, `elevation` |
@@ -34,7 +53,7 @@ A beautiful, fully customizable Flutter SnackBar utility with **4 types**, **act
 
 ```yaml
 dependencies:
-  app_snackbar: ^1.0.0
+  app_snackbar: ^1.0.2
 ```
 
 ```dart
@@ -56,6 +75,8 @@ void main() {
   AppSnackBar.theme = const AppSnackBarTheme(  // ✅ optional global theme
     infoColor: Color(0xFF003249),
     defaultAnimation: SnackBarAnimation.fade,
+    defaultDuration: Duration(seconds: 4),     // ✅ global duration
+    showTimer: true,                            // ✅ enable timer globally
   );
 
   runApp(MyApp());
@@ -101,6 +122,40 @@ AppSnackBar.info(context, 'Fade in!',
 
 AppSnackBar.info(context, 'Instant!',
     animation: SnackBarAnimation.none);
+```
+
+### Duration
+
+```dart
+// Per-call duration:
+AppSnackBar.success(context, 'Saved!',
+    duration: const Duration(seconds: 5));
+
+// Global default via theme (set once in main):
+AppSnackBar.theme = const AppSnackBarTheme(
+  defaultDuration: Duration(seconds: 4),
+);
+
+// Priority: per-call → theme default → built-in default (3s)
+```
+
+### Timer Bar
+
+```dart
+// Per-call:
+AppSnackBar.success(context, 'Saved!',
+    showTimer: true);
+
+// With custom color:
+AppSnackBar.error(context, 'Failed!',
+    showTimer: true,
+    timerColor: Colors.redAccent);
+
+// Enable globally via theme:
+AppSnackBar.theme = const AppSnackBarTheme(
+  showTimer: true,
+  timerColor: Colors.white70,
+);
 ```
 
 ### With Action Button
@@ -166,10 +221,12 @@ AppSnackBar.show(
   fontSize: 16,                          // bigger text
   borderRadius: 8,                       // sharper corners
   elevation: 12,                         // deeper shadow
-  duration: const Duration(seconds: 5),
+  duration: const Duration(seconds: 5),  // custom duration
   position: SnackBarPosition.top,
   animation: SnackBarAnimation.fade,
   showClose: true,
+  showTimer: true,                       // countdown bar
+  timerColor: Colors.white54,            // timer bar color
   onClose: () => debugPrint('Dismissed'),
 );
 ```
@@ -200,7 +257,7 @@ AppSnackBar.theme = const AppSnackBarTheme(
   successColor: Colors.teal,
   errorColor: Color(0xFFC62828),
   warningColor: Colors.deepOrange,
-  infoColor: Color(0xFF003249),       // brand color
+  infoColor: Color(0xFF003249),
 
   // Icons
   successIcon: Icons.done_all_rounded,
@@ -217,6 +274,11 @@ AppSnackBar.theme = const AppSnackBarTheme(
   // Animation
   defaultAnimation: SnackBarAnimation.fade,
   animationDuration: Duration(milliseconds: 250),
+
+  // Duration & Timer
+  defaultDuration: Duration(seconds: 4),
+  showTimer: true,
+  timerColor: Colors.white60,
 );
 ```
 
@@ -254,6 +316,29 @@ AppSnackBar.theme = const AppSnackBarTheme(
 | `elevation` | `double` | `6` |
 | `defaultAnimation` | `SnackBarAnimation` | `.slide` |
 | `animationDuration` | `Duration` | `300ms` |
+| `defaultDuration` | `Duration?` | `null` (3s fallback) |
+| `showTimer` | `bool` | `false` |
+| `timerColor` | `Color?` | `Colors.white54` |
+
+### Per-call Parameters
+
+| Parameter | Type | Description |
+|---|---|---|
+| `type` | `SnackBarType` | Snackbar style |
+| `position` | `SnackBarPosition` | Top or bottom |
+| `animation` | `SnackBarAnimation` | Entrance animation |
+| `duration` | `Duration?` | How long to show |
+| `backgroundColor` | `Color?` | Custom background |
+| `fontSize` | `double?` | Text size override |
+| `textStyle` | `TextStyle?` | Full text style override |
+| `borderRadius` | `double?` | Corner radius |
+| `elevation` | `double?` | Shadow depth |
+| `showClose` | `bool` | Show close button |
+| `showTimer` | `bool?` | Show countdown bar |
+| `timerColor` | `Color?` | Timer bar color |
+| `leading` | `Widget?` | Custom leading widget |
+| `trailing` | `Widget?` | Custom trailing widget |
+| `onClose` | `VoidCallback?` | On dismiss callback |
 
 ### Enums
 
@@ -262,7 +347,6 @@ AppSnackBar.theme = const AppSnackBarTheme(
 | `SnackBarType` | `success`, `error`, `warning`, `info` |
 | `SnackBarPosition` | `bottom`, `top` |
 | `SnackBarAnimation` | `slide`, `fade`, `none` |
-
 
 ---
 
