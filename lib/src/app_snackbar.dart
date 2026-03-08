@@ -65,8 +65,12 @@ class AppSnackBar {
         Duration queueGap = const Duration(milliseconds: 300),
         bool? showTimer,
         Color? timerColor,
+        // ✅ Per-call icon override.
+        // Priority: per-call icon → theme.successIcon/errorIcon/… → built-in default
+        IconData? icon,
       }) {
     final config = theme.resolve(type);
+    final effectiveIcon = icon ?? config.icon;   // ← per-call wins
     final effectiveBg = backgroundColor ?? config.backgroundColor;
     final effectiveRadius = borderRadius ?? theme.borderRadius;
     final effectiveElevation = elevation ?? theme.elevation;
@@ -91,7 +95,7 @@ class AppSnackBar {
       _ensureQueue()?.add(
         _buildFlutterSnackBar(
           message: message,
-          icon: config.icon,
+          icon: effectiveIcon,
           backgroundColor: effectiveBg,
           borderRadius: effectiveRadius,
           elevation: effectiveElevation,
@@ -116,7 +120,7 @@ class AppSnackBar {
     _showOverlay(
       context,
       message,
-      icon: config.icon,
+      icon: effectiveIcon,
       backgroundColor: effectiveBg,
       borderRadius: effectiveRadius,
       elevation: effectiveElevation,
@@ -263,6 +267,7 @@ class AppSnackBar {
       String message, {
         required String actionLabel,
         required VoidCallback onAction,
+        bool showClose = true,
         SnackBarType type = SnackBarType.info,
         SnackBarPosition position = SnackBarPosition.bottom,
         SnackBarAnimation? animation,
@@ -277,8 +282,22 @@ class AppSnackBar {
         double? width,
         double? height,
         Duration queueGap = const Duration(milliseconds: 300),
+        // ✅ Per-call icon override.
+        // Priority: per-call icon → theme.successIcon/errorIcon/… → built-in default
+        IconData? icon,
+        // ✅ Optional icon shown inside the action button, left of the label.
+        // If null, only the label text is shown.
+        //
+        // Example:
+        //   AppSnackBar.showWithAction(context, 'Deleted',
+        //     actionLabel: 'UNDO',
+        //     actionIcon: Icons.undo_rounded,
+        //     onAction: restoreItem,
+        //   );
+        IconData? actionIcon,
       }) {
     final config = theme.resolve(type);
+    final effectiveIcon = icon ?? config.icon;
     final effectiveBg = backgroundColor ?? config.backgroundColor;
     final effectiveRadius = borderRadius ?? theme.borderRadius;
     final effectiveElevation = elevation ?? theme.elevation;
@@ -306,13 +325,23 @@ class AppSnackBar {
           borderRadius: BorderRadius.circular(8),
           border: Border.all(color: Colors.white.withValues(alpha: 0.35)),
         ),
-        child: Text(
-          actionLabel,
-          style: const TextStyle(
-            color: Colors.white,
-            fontSize: 13,
-            fontWeight: FontWeight.bold,
-          ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // ✅ actionIcon is optional — only rendered when developer provides it
+            if (actionIcon != null) ...[
+              Icon(actionIcon, color: Colors.white, size: 14),
+              const SizedBox(width: 4),
+            ],
+            Text(
+              actionLabel,
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 13,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -323,14 +352,14 @@ class AppSnackBar {
       _ensureQueue()?.add(
         _buildFlutterSnackBar(
           message: message,
-          icon: config.icon,
+          icon: effectiveIcon,
           backgroundColor: effectiveBg,
           borderRadius: effectiveRadius,
           elevation: effectiveElevation,
           borderColor: effectiveBorderColor,
           borderWidth: effectiveBorderWidth,
           textStyle: effectiveTextStyle,
-          showClose: false,
+          showClose: showClose,
           trailing: actionWidget,
           // duration: duration,
           duration: effectiveDuration,
@@ -346,7 +375,7 @@ class AppSnackBar {
     _showOverlay(
       context,
       message,
-      icon: config.icon,
+      icon: effectiveIcon,
       backgroundColor: effectiveBg,
       borderRadius: effectiveRadius,
       elevation: effectiveElevation,
@@ -357,7 +386,7 @@ class AppSnackBar {
       animation: effectiveAnimation,
       // duration: duration,
       duration: effectiveDuration,
-      showClose: false,
+      showClose: showClose,
       trailing: actionWidget,
       textStyle: effectiveTextStyle,
       position: position,
@@ -381,8 +410,23 @@ class AppSnackBar {
         double? borderWidth,
         double? width,
         double? height,
+        bool showClose = true,
+        // ✅ Per-call icon override (shown when no custom leading widget is used).
+        // Priority: per-call icon → theme.successIcon/errorIcon/… → built-in default
+        IconData? icon,
+        // ✅ Custom progress indicator — pass any widget.
+        // If null, the default white CircularProgressIndicator is used.
+        //
+        // Examples:
+        //   progressIndicator: const CircularProgressIndicator(
+        //     strokeWidth: 2, color: Colors.amber),
+        //   progressIndicator: const LinearProgressIndicator(),
+        //   progressIndicator: MyBrandedSpinner(),
+        Widget? progressIndicator,
       }) {
-    const spinner = SizedBox(
+    // ✅ Developer's widget wins; fallback = default white spinner
+    final effectiveSpinner = progressIndicator ??
+      const SizedBox(
       width: 20,
       height: 20,
       child: CircularProgressIndicator(
@@ -392,11 +436,12 @@ class AppSnackBar {
     );
 
     final config = theme.resolve(type);
+    final effectiveIcon = icon ?? config.icon;
     final effectiveDuration = duration ?? theme.defaultDuration ?? const Duration(seconds: 10);
     _showOverlay(
       context,
       message,
-      icon: config.icon,
+      icon: effectiveIcon,
       backgroundColor: backgroundColor ?? config.backgroundColor,
       borderRadius: borderRadius ?? theme.borderRadius,
       elevation: elevation ?? theme.elevation,
@@ -407,8 +452,8 @@ class AppSnackBar {
       animation: theme.defaultAnimation,
       // duration: duration,
       duration: effectiveDuration,
-      showClose: false,
-      leading: spinner,
+      showClose: showClose,
+      leading: effectiveSpinner,
       textStyle: textStyle ??
           theme.textStyle ??
           TextStyle(
@@ -456,6 +501,8 @@ class AppSnackBar {
         double? height,
         bool? showTimer,
         Color? timerColor,
+        // ✅ Per-call icon override. Priority: per-call → theme icon → built-in default
+        IconData? icon,
         VoidCallback? onClose}) =>
       show(context, message,
           type: SnackBarType.success,
@@ -474,6 +521,7 @@ class AppSnackBar {
           height: height,
           showTimer: showTimer,
           timerColor: timerColor,
+          icon: icon,
           onClose: onClose);
 
   static void error(BuildContext? context, String message,
@@ -492,6 +540,8 @@ class AppSnackBar {
         double? height,
         bool? showTimer,
         Color? timerColor,
+        // ✅ Per-call icon override. Priority: per-call → theme icon → built-in default
+        IconData? icon,
         VoidCallback? onClose}) =>
       show(context, message,
           type: SnackBarType.error,
@@ -510,6 +560,7 @@ class AppSnackBar {
           height: height,
           showTimer: showTimer,
           timerColor: timerColor,
+          icon: icon,
           onClose: onClose);
 
   static void warning(BuildContext? context, String message,
@@ -528,6 +579,8 @@ class AppSnackBar {
         double? height,
         bool? showTimer,
         Color? timerColor,
+        // ✅ Per-call icon override. Priority: per-call → theme icon → built-in default
+        IconData? icon,
         VoidCallback? onClose}) =>
       show(context, message,
           type: SnackBarType.warning,
@@ -546,6 +599,7 @@ class AppSnackBar {
           height: height,
           showTimer: showTimer,
           timerColor: timerColor,
+          icon: icon,
           onClose: onClose);
 
   static void info(BuildContext? context, String message,
@@ -564,6 +618,8 @@ class AppSnackBar {
         double? height,
         bool? showTimer,
         Color? timerColor,
+        // ✅ Per-call icon override. Priority: per-call → theme icon → built-in default
+        IconData? icon,
         VoidCallback? onClose}) =>
       show(context, message,
           type: SnackBarType.info,
@@ -582,6 +638,7 @@ class AppSnackBar {
           height: height,
           showTimer: showTimer,
           timerColor: timerColor,
+          icon: icon,
           onClose: onClose);
 
   // ── Private helpers ────────────────────────────────────────────────────────

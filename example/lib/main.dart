@@ -322,12 +322,12 @@ class _TypesGrid extends StatelessWidget {
   Widget build(BuildContext context) {
     final types = [
       _TypeItem('Success', '✅', const Color(0xFF2E7D32), const Color(0xFF1B5E20),
-              () => AppSnackBar.success(context, 'Profile updated successfully!',backgroundColor: Colors.yellow, borderColor: Colors.white30, borderWidth: 1.5,duration: const Duration(seconds: 10))),
+              () => AppSnackBar.success(context, 'Profile updated successfully!',backgroundColor: Colors.transparent, borderColor: Colors.white30, borderWidth: 1.5,duration: const Duration(seconds: 10))),
       _TypeItem('Error', '❌', const Color(0xFFC62828), const Color(0xFF7F0000),
               () => AppSnackBar.error(context, 'Upload failed. Try again.',borderColor: Colors.purple,
             borderWidth: 1.5,)),
       _TypeItem('Warning', '⚠️', const Color(0xFFE65100), const Color(0xFFBF360C),
-              () => AppSnackBar.warning(context, 'Download cancelled.')),
+              () => AppSnackBar.warning(context, 'Download cancelled.', position: SnackBarPosition.bottom)),
       _TypeItem('Info', 'ℹ️', const Color(0xFF003249), const Color(0xFF001F2E),
               () => AppSnackBar.info(context, 'New version available.')),
     ];
