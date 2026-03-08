@@ -1,5 +1,5 @@
 <!-- badges + full docs -->
-# app_snackbar
+**# app_snackbar
 
 [![pub.dev](https://img.shields.io/pub/v/app_snackbar.svg)](https://pub.dev/packages/app_snackbar)
 [![Flutter](https://img.shields.io/badge/Flutter-3.16+-blue.svg)](https://flutter.dev)
@@ -18,11 +18,23 @@ https://github.com/user-attachments/assets/f18edc5d-7538-4c7c-a588-a3fffa58d59f
 ---
 
 ## Screenshots
+<table>
+  <tr>
+    <td><img src="https://raw.githubusercontent.com/spatelpatidar/app_snackbar/main/screenshots/showcase.png" width="200" alt="showcase.png"/></td>
+    <td><img src="https://raw.githubusercontent.com/spatelpatidar/app_snackbar/main/screenshots/error.png" width="200" alt="error.png"/></td>
+    <td><img src="https://raw.githubusercontent.com/spatelpatidar/app_snackbar/main/screenshots/top_position.png" width="200" alt="top_position.png"/></td>
+    <td><img src="https://raw.githubusercontent.com/spatelpatidar/app_snackbar/main/screenshots/code_preview.png" width="200" alt="code_preview.png"/></td>
+  </tr>
+</table>
 
-![Showcase](https://raw.githubusercontent.com/spatelpatidar/app_snackbar/main/screenshots/showcase.png)
-![Error](https://raw.githubusercontent.com/spatelpatidar/app_snackbar/main/screenshots/error.png)
-![Top Position](https://raw.githubusercontent.com/spatelpatidar/app_snackbar/main/screenshots/top_position.png)
-![Code Preview](https://raw.githubusercontent.com/spatelpatidar/app_snackbar/main/screenshots/code_preview.png)
+
+[//]: # (![Showcase]&#40;https://raw.githubusercontent.com/spatelpatidar/app_snackbar/main/screenshots/showcase.png&#41;)
+
+[//]: # (![Error]&#40;https://raw.githubusercontent.com/spatelpatidar/app_snackbar/main/screenshots/error.png&#41;)
+
+[//]: # (![Top Position]&#40;https://raw.githubusercontent.com/spatelpatidar/app_snackbar/main/screenshots/top_position.png&#41;)
+
+[//]: # (![Code Preview]&#40;https://raw.githubusercontent.com/spatelpatidar/app_snackbar/main/screenshots/code_preview.png&#41;)
 
 
 ---
