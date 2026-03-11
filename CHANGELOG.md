@@ -1,8 +1,38 @@
+## 1.0.4
+
+### ✨ New Features
+
+**Per-call Icon Override**
+- `icon` param added to `show()`, `success()`, `error()`, `warning()`, `info()`, `showWithAction()`, `showLoading()`
+- Priority chain: per-call `icon` → `AppSnackBarTheme` icon → built-in default
+- Example: `AppSnackBar.success(context, 'Done!', icon: Icons.cloud_done_rounded)`
+
+**Action Icon in `showWithAction()`**
+- `actionIcon` — optional icon shown left of the action button label
+- If null, only the label text is shown (no breaking change)
+- Example: `AppSnackBar.showWithAction(context, 'Deleted', actionLabel: 'UNDO', actionIcon: Icons.undo_rounded, onAction: restore)`
+
+**Custom Progress Indicator in `showLoading()`**
+- `progressIndicator` — pass any widget (CircularProgressIndicator, LinearProgressIndicator, Lottie, etc.)
+- Falls back to default white `CircularProgressIndicator` if not provided
+- Example: `AppSnackBar.showLoading(context, 'Uploading...', progressIndicator: LinearProgressIndicator())`
+
+**Per-call Queue Override**
+- `useQueue` param added to all public methods
+- Priority chain: per-call `useQueue` → `AppSnackBar.useQueue` (global)
+- Example: `AppSnackBar.error(context, 'Critical!', useQueue: false)`
+
+**Top Position Fix**
+- `SnackBarPosition.top` now correctly renders at the top on all devices
+- Root cause: `ScaffoldMessenger` always renders at bottom regardless of margin
+- Fix: top position now always forces overlay mode, bypassing `ScaffoldMessenger` entirely
+---
 ## 1.0.3
 
 ### ✨ Documentation Fix
 
 - Fixed: screenshots not showing on pub.dev — replaced HTML <img> tags with GitHub raw URLs
+---
 
 ## 1.0.2
 

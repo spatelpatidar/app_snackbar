@@ -438,15 +438,52 @@ class AppSnackBar {
     final config = theme.resolve(type);
     final effectiveIcon = icon ?? config.icon;
     final effectiveDuration = duration ?? theme.defaultDuration ?? const Duration(seconds: 10);
+    final effectiveTextStyle = textStyle ??
+      theme.textStyle ??
+      TextStyle(
+        color: Colors.white,
+        fontSize: fontSize ?? theme.fontSize,
+        fontWeight: FontWeight.w500,
+      );
+    final effectiveBg = backgroundColor ?? config.backgroundColor;
+    final effectiveRadius = borderRadius ?? theme.borderRadius;
+    final effectiveElevation = elevation ?? theme.elevation;
+    final effectiveBorderColor = borderColor ?? theme.borderColor;
+    final effectiveBorderWidth = borderWidth ?? theme.borderWidth;
+
+    if (useQueue) {
+      final messenger = _resolveMessenger(context);
+      if (messenger == null) return;
+      _ensureQueue()?.add(
+        _buildFlutterSnackBar(
+          message: message,
+          icon: effectiveIcon,
+          backgroundColor: effectiveBg,
+          borderRadius: effectiveRadius,
+          elevation: effectiveElevation,
+          borderColor: effectiveBorderColor,
+          borderWidth: effectiveBorderWidth,
+          textStyle: effectiveTextStyle,
+          showClose: false,
+          leading: effectiveSpinner,
+          duration: effectiveDuration,
+          position: position,
+          messengerKey: messengerKey,
+          context: context,
+        ),
+      );
+      return;
+    }
+
     _showOverlay(
       context,
       message,
       icon: effectiveIcon,
-      backgroundColor: backgroundColor ?? config.backgroundColor,
-      borderRadius: borderRadius ?? theme.borderRadius,
-      elevation: elevation ?? theme.elevation,
-      borderColor: borderColor ?? theme.borderColor,
-      borderWidth: borderWidth ?? theme.borderWidth,
+      backgroundColor: effectiveBg,
+      borderRadius: effectiveRadius,
+      elevation: effectiveElevation,
+      borderColor: effectiveBorderColor,
+      borderWidth: effectiveBorderWidth,
       width: width,
       height: height,
       animation: theme.defaultAnimation,
@@ -454,13 +491,7 @@ class AppSnackBar {
       duration: effectiveDuration,
       showClose: showClose,
       leading: effectiveSpinner,
-      textStyle: textStyle ??
-          theme.textStyle ??
-          TextStyle(
-            color: Colors.white,
-            fontSize: fontSize ?? theme.fontSize,
-            fontWeight: FontWeight.w500,
-          ),
+      textStyle: effectiveTextStyle,
       position: position,
     );
   }

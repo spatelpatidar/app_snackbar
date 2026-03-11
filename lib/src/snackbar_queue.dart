@@ -13,7 +13,7 @@ class _QueueItem {
 /// Manages a FIFO queue of [SnackBar]s, showing them one-by-one
 /// with an optional gap between each.
 ///
-/// Used internally by [AppSnackBar] when queue mode is active.
+/// Used internally by [//AppSnackBar] when queue mode is active.
 ///
 /// ### Direct usage
 /// ```dart
@@ -74,8 +74,13 @@ class SnackBarQueue {
     _isProcessing = true;
     final item = _queue.removeAt(0);
 
-    messenger.showSnackBar(item.snackBar).closed.then((_) {
-      _gapTimer = Timer(item.gap, _processNext);
-    });
+    // messenger.showSnackBar(item.snackBar).closed.then((_) {
+    //   _gapTimer = Timer(item.gap, _processNext);
+    // });
+    unawaited( // ✅ explicitly marks the Future as intentionally discarded
+      messenger.showSnackBar(item.snackBar).closed.then((_) {
+        _gapTimer = Timer(item.gap, _processNext);
+      }),
+    );
   }
 }

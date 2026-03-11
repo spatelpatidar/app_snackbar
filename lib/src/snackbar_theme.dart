@@ -170,7 +170,7 @@ typedef SnackBarContentBuilder = Widget Function(
 
 // ── AppSnackBarTheme ──────────────────────────────────────────────────────────
 
-/// Global visual theme for [AppSnackBar].
+/// Global visual theme for [//AppSnackBar].
 ///
 /// Set once in `main()` and every snackbar inherits these values
 /// unless overridden per-call.
@@ -328,7 +328,7 @@ class AppSnackBarTheme {
 
   /// Whether to show a countdown progress bar at the bottom of the snackbar.
   ///
-  /// The bar shrinks from full width → empty over the snackbar's [duration],
+  /// The bar shrinks from full width → empty over the snackbar's [//duration],
   /// giving the user a clear visual cue of how long the snackbar will stay.
   ///
   /// Default: `false` (off globally).

@@ -1,5 +1,5 @@
 <!-- badges + full docs -->
-**# app_snackbar
+# app_snackbar
 
 [![pub.dev](https://img.shields.io/pub/v/app_snackbar.svg)](https://pub.dev/packages/app_snackbar)
 [![Flutter](https://img.shields.io/badge/Flutter-3.16+-blue.svg)](https://flutter.dev)
@@ -8,15 +8,6 @@
 A beautiful, fully customizable Flutter SnackBar utility with **4 types**, **action buttons**, **loading states**, **queue support**, **slide/fade animations**, **top/bottom positioning**, **countdown timer bar**, and global **Material 3** theme override.
 
 ---
-
-## Demo
-
-https://github.com/user-attachments/assets/f18edc5d-7538-4c7c-a588-a3fffa58d59f
-
-<video src="demo/demo_video.mp4" controls width="320"></video>
-
----
-
 ## Screenshots
 <table>
   <tr>
@@ -27,16 +18,6 @@ https://github.com/user-attachments/assets/f18edc5d-7538-4c7c-a588-a3fffa58d59f
   </tr>
 </table>
 
-
-[//]: # (![Showcase]&#40;https://raw.githubusercontent.com/spatelpatidar/app_snackbar/main/screenshots/showcase.png&#41;)
-
-[//]: # (![Error]&#40;https://raw.githubusercontent.com/spatelpatidar/app_snackbar/main/screenshots/error.png&#41;)
-
-[//]: # (![Top Position]&#40;https://raw.githubusercontent.com/spatelpatidar/app_snackbar/main/screenshots/top_position.png&#41;)
-
-[//]: # (![Code Preview]&#40;https://raw.githubusercontent.com/spatelpatidar/app_snackbar/main/screenshots/code_preview.png&#41;)
-
-
 ---
 
 ## Features
@@ -44,13 +25,14 @@ https://github.com/user-attachments/assets/f18edc5d-7538-4c7c-a588-a3fffa58d59f
 | Feature | Description |
 |---|---|
 | **4 types** | `success` 🟢 `error` 🔴 `warning` 🟠 `info` 🔵 |
-| **Action button** | Undo, Retry, View — inline chip |
-| **Loading** | Spinner for async operations |
-| **Queue** | Show one after another |
+| **Action button** | Undo, Retry, View — inline chip with optional icon |
+| **Loading** | Spinner for async operations — pass any custom indicator |
+| **Queue** | Show one after another — override per-call |
 | **Animations** | Slide, Fade, or None |
-| **Position** | Top or Bottom |
+| **Position** | Top or Bottom (top always uses overlay) |
 | **Timer bar** | Countdown progress bar with custom color |
 | **Duration control** | Per-call or global theme default |
+| **Icon override** | Per-call icon on every method |
 | **messengerKey** | Visible above bottom sheets |
 | **Global theme** | Override colors, icons, fonts app-wide |
 | **Per-call overrides** | `backgroundColor`, `textStyle`, `fontSize`, `borderRadius`, `elevation` |
@@ -63,7 +45,7 @@ https://github.com/user-attachments/assets/f18edc5d-7538-4c7c-a588-a3fffa58d59f
 
 ```yaml
 dependencies:
-  app_snackbar: ^1.0.3
+  app_snackbar: ^1.0.4
 ```
 
 ```dart
@@ -111,6 +93,26 @@ AppSnackBar.warning(context, 'Download cancelled.');
 AppSnackBar.info(context, 'New version available.');
 ```
 
+### Per-call Icon Override
+
+Override the icon for any single call without changing the theme.  
+Priority: `per-call icon` → `AppSnackBarTheme icon` → built-in default
+
+```dart
+AppSnackBar.success(context, 'Uploaded!',
+    icon: Icons.cloud_done_rounded);
+
+AppSnackBar.error(context, 'No internet',
+    icon: Icons.wifi_off_rounded);
+
+AppSnackBar.info(context, 'Reminder set',
+    icon: Icons.alarm_rounded);
+
+// Works on every method including show()
+AppSnackBar.show(context, 'Custom icon',
+    icon: Icons.star_rounded);
+```
+
 ### Position
 
 ```dart
@@ -120,6 +122,8 @@ AppSnackBar.success(context, 'Top!',
 AppSnackBar.error(context, 'Bottom!',
     position: SnackBarPosition.bottom);   // ⬇️ default
 ```
+
+> **Note:** `SnackBarPosition.top` always uses overlay mode internally — this is required because Flutter's `ScaffoldMessenger` renders at the bottom regardless of margin.
 
 ### Animation
 
@@ -171,6 +175,7 @@ AppSnackBar.theme = const AppSnackBarTheme(
 ### With Action Button
 
 ```dart
+// Label only
 AppSnackBar.showWithAction(
   context,
   'Message deleted.',
@@ -178,15 +183,40 @@ AppSnackBar.showWithAction(
   type: SnackBarType.warning,
   onAction: () => _restoreMessage(),
 );
+
+// With icon left of label
+AppSnackBar.showWithAction(
+  context,
+  'Item deleted.',
+  actionLabel: 'Undo',
+  actionIcon: Icons.undo_rounded,   // ✅ new in 1.0.4
+  onAction: () => _restoreItem(),
+);
 ```
 
 ### Loading Snackbar
 
 ```dart
+// Default white spinner
 AppSnackBar.showLoading(context, 'Uploading photo...');
 
-// Later, replace with result:
-AppSnackBar.success(context, 'Upload complete!');
+// Custom indicator — pass any widget
+AppSnackBar.showLoading(
+  context,
+  'Processing...',
+  progressIndicator: CircularProgressIndicator(color: Colors.amber), // ✅ new in 1.0.4
+);
+
+AppSnackBar.showLoading(
+  context,
+  'Syncing...',
+  progressIndicator: LinearProgressIndicator(),
+);
+
+// Replace with result when done:
+AppSnackBar.showLoading(context, 'Uploading photo...');
+await uploadPhoto();
+if (context.mounted) AppSnackBar.success(context, 'Upload complete! ✅');
 
 // Or just hide:
 AppSnackBar.hide(context);
@@ -195,12 +225,16 @@ AppSnackBar.hide(context);
 ### Queue Mode
 
 ```dart
-AppSnackBar.useQueue = true;  // enable once
+AppSnackBar.useQueue = true;  // enable once (default: true)
 
 AppSnackBar.success(null, 'Step 1: Data saved ✅');
 AppSnackBar.info(null, 'Step 2: Syncing...');
 AppSnackBar.success(null, 'Step 3: All done! 🎉');
 // Each appears after the previous finishes ✅
+
+// Skip the queue for one specific call:
+AppSnackBar.error(context, 'Critical error!',
+    useQueue: false);   // ✅ new in 1.0.4
 
 AppSnackBar.clearQueue(); // cancel all pending
 ```
@@ -227,6 +261,7 @@ AppSnackBar.show(
   context,
   'Fully custom!',
   type: SnackBarType.error,
+  icon: Icons.wifi_off_rounded,          // custom icon
   backgroundColor: Colors.deepPurple,   // custom color
   fontSize: 16,                          // bigger text
   borderRadius: 8,                       // sharper corners
@@ -237,6 +272,7 @@ AppSnackBar.show(
   showClose: true,
   showTimer: true,                       // countdown bar
   timerColor: Colors.white54,            // timer bar color
+  useQueue: false,                       // skip queue for this call
   onClose: () => debugPrint('Dismissed'),
 );
 ```
@@ -269,9 +305,11 @@ AppSnackBar.theme = const AppSnackBarTheme(
   warningColor: Colors.deepOrange,
   infoColor: Color(0xFF003249),
 
-  // Icons
+  // Icons (overridable per-call too)
   successIcon: Icons.done_all_rounded,
   errorIcon: Icons.cancel_outlined,
+  warningIcon: Icons.warning_amber_rounded,
+  infoIcon: Icons.info_outline_rounded,
 
   // Typography
   fontSize: 15,
@@ -300,35 +338,38 @@ AppSnackBar.theme = const AppSnackBarTheme(
 
 | Method | Description |
 |---|---|
-| `success(ctx, msg)` | ✅ Green snackbar |
-| `error(ctx, msg)` | ❌ Red snackbar |
-| `warning(ctx, msg)` | ⚠️ Orange snackbar |
-| `info(ctx, msg)` | ℹ️ Brand-color snackbar |
+| `success(ctx, msg, {icon, useQueue, ...})` | ✅ Green snackbar |
+| `error(ctx, msg, {icon, useQueue, ...})` | ❌ Red snackbar |
+| `warning(ctx, msg, {icon, useQueue, ...})` | ⚠️ Orange snackbar |
+| `info(ctx, msg, {icon, useQueue, ...})` | ℹ️ Brand-color snackbar |
 | `show(ctx, msg, {...})` | Full control |
-| `showWithAction(...)` | Action chip (Undo, Retry) |
-| `showLoading(ctx, msg)` | Spinner snackbar |
+| `showWithAction(..., {actionIcon})` | Action chip with optional icon |
+| `showLoading(ctx, msg, {progressIndicator})` | Custom or default spinner |
 | `hide(ctx)` | Dismiss current |
 | `clearQueue()` | Cancel all queued |
 | `queueLength` | Pending queue count |
 
 ### AppSnackBarTheme
 
-| Property | Type | Default |
-|---|---|---|
-| `successColor` | `Color?` | `#2E7D32` 🟢 |
-| `errorColor` | `Color?` | `#C62828` 🔴 |
-| `warningColor` | `Color?` | `#E65100` 🟠 |
-| `infoColor` | `Color?` | `#003249` 🔵 |
-| `*Icon` | `IconData?` | material rounded icons |
-| `textStyle` | `TextStyle?` | `null` |
-| `fontSize` | `double` | `14` |
-| `borderRadius` | `double` | `16` |
-| `elevation` | `double` | `6` |
-| `defaultAnimation` | `SnackBarAnimation` | `.slide` |
-| `animationDuration` | `Duration` | `300ms` |
-| `defaultDuration` | `Duration?` | `null` (3s fallback) |
-| `showTimer` | `bool` | `false` |
-| `timerColor` | `Color?` | `Colors.white54` |
+| Property | Type | Default                |
+|---|---|------------------------|
+| `successColor` | `Color?` | `#2E7D32` 🟢           |
+| `errorColor` | `Color?` | `#C62828` 🔴           |
+| `warningColor` | `Color?` | `#E65100` 🟠           |
+| `infoColor` | `Color?` | `#003249` 🔵           |
+| `successIcon` | `IconData?` | material rounded icons |
+| `errorIcon` | `IconData?` | material rounded icon  |
+| `warningIcon` | `IconData?` | material rounded icon  |
+| `infoIcon` | `IconData?` | material rounded icon  |
+| `textStyle` | `TextStyle?` | `null`                 |
+| `fontSize` | `double` | `14`                   |
+| `borderRadius` | `double` | `16`                   |
+| `elevation` | `double` | `6`                    |
+| `defaultAnimation` | `SnackBarAnimation` | `.slide`               |
+| `animationDuration` | `Duration` | `300ms`                |
+| `defaultDuration` | `Duration?` | `null` (3s fallback)   |
+| `showTimer` | `bool` | `false`                |
+| `timerColor` | `Color?` | `Colors.white54`       |
 
 ### Per-call Parameters
 
@@ -338,6 +379,7 @@ AppSnackBar.theme = const AppSnackBarTheme(
 | `position` | `SnackBarPosition` | Top or bottom |
 | `animation` | `SnackBarAnimation` | Entrance animation |
 | `duration` | `Duration?` | How long to show |
+| `icon` | `IconData?` | Icon override for this call |
 | `backgroundColor` | `Color?` | Custom background |
 | `fontSize` | `double?` | Text size override |
 | `textStyle` | `TextStyle?` | Full text style override |
@@ -346,9 +388,24 @@ AppSnackBar.theme = const AppSnackBarTheme(
 | `showClose` | `bool` | Show close button |
 | `showTimer` | `bool?` | Show countdown bar |
 | `timerColor` | `Color?` | Timer bar color |
+| `useQueue` | `bool?` | Queue override for this call |
 | `leading` | `Widget?` | Custom leading widget |
 | `trailing` | `Widget?` | Custom trailing widget |
 | `onClose` | `VoidCallback?` | On dismiss callback |
+
+### `showWithAction()` extra params
+
+| Parameter | Type | Description |
+|---|---|---|
+| `actionLabel` | `String` | **Required.** Button label |
+| `onAction` | `VoidCallback` | **Required.** Button callback |
+| `actionIcon` | `IconData?` | Optional icon left of label |
+
+### `showLoading()` extra params
+
+| Parameter | Type | Description |
+|---|---|---|
+| `progressIndicator` | `Widget?` | Custom widget. Defaults to white `CircularProgressIndicator` |
 
 ### Enums
 

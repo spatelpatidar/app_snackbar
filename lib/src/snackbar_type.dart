@@ -2,7 +2,7 @@
 /// The visual type/style of the snackbar.
 ///
 /// Each type maps to a default color and icon which can be
-/// overridden globally via [AppSnackBarTheme].
+/// overridden globally via [//AppSnackBarTheme].
 enum SnackBarType {
   /// ✅ Green — operation completed successfully.
   success,
