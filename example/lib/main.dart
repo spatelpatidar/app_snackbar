@@ -53,13 +53,13 @@ class ShowcaseScreen extends StatelessWidget {
               const SizedBox(height: 32),
 
               // ── Types ──────────────────────────────────────────────────────
-              _SectionLabel('SNACKBAR TYPES'),
+              const _SectionLabel('SNACKBAR TYPES'),
               const SizedBox(height: 12),
               _TypesGrid(),
               const SizedBox(height: 28),
 
               // ── Positions ──────────────────────────────────────────────────
-              _SectionLabel('POSITION'),
+              const _SectionLabel('POSITION'),
               const SizedBox(height: 12),
               Row(
                 children: [
@@ -88,7 +88,7 @@ class ShowcaseScreen extends StatelessWidget {
               const SizedBox(height: 28),
 
               // ── Animations ────────────────────────────────────────────────
-              _SectionLabel('ANIMATION'),
+              const _SectionLabel('ANIMATION'),
               const SizedBox(height: 12),
               Row(
                 children: [
@@ -132,19 +132,19 @@ class ShowcaseScreen extends StatelessWidget {
               const SizedBox(height: 28),
 
               // ── Action & Loading ──────────────────────────────────────────
-              _SectionLabel('ACTION & LOADING'),
+              const _SectionLabel('ACTION & LOADING'),
               const SizedBox(height: 12),
               _ActionCard(context: context),
               const SizedBox(height: 28),
 
               // ── Queue ─────────────────────────────────────────────────────
-              _SectionLabel('QUEUE MODE'),
+              const _SectionLabel('QUEUE MODE'),
               const SizedBox(height: 12),
               _QueueCard(context: context),
               const SizedBox(height: 28),
 
               // ── Custom Code ───────────────────────────────────────────────
-              _SectionLabel('✏️  CUSTOM CODE'),
+              const _SectionLabel('✏️  CUSTOM CODE'),
               const SizedBox(height: 12),
               _CustomCodeCard(context: context),
               const SizedBox(height: 12),
@@ -322,7 +322,7 @@ class _TypesGrid extends StatelessWidget {
   Widget build(BuildContext context) {
     final types = [
       _TypeItem('Success', '✅', const Color(0xFF2E7D32), const Color(0xFF1B5E20),
-              () => AppSnackBar.success(context, 'Profile updated successfully!',backgroundColor: Colors.transparent, borderColor: Colors.white30, borderWidth: 1.5,duration: const Duration(seconds: 10))),
+              () => AppSnackBar.success(context, 'Profile updated successfully!',backgroundColor: Colors.transparent, borderColor: Colors.white30, borderWidth: 1.5,duration: const Duration(seconds: 3))),
       _TypeItem('Error', '❌', const Color(0xFFC62828), const Color(0xFF7F0000),
               () => AppSnackBar.error(context, 'Upload failed. Try again.',borderColor: Colors.purple,
             borderWidth: 1.5,)),
@@ -466,12 +466,16 @@ class _ActionCard extends StatelessWidget {
             label: '⏳  Loading → Success',
             accent: const Color(0xFF003249),
             fullWidth: true,
-            onTap: () {
+            onTap: () async {
               AppSnackBar.showLoading(context, 'Uploading photo...');
-              Future.delayed(
-                const Duration(seconds: 2),
-                    () => AppSnackBar.success(context, 'Upload complete! ✅'),
-              );
+              await Future.delayed(const Duration(seconds: 2));
+              if (!context.mounted) return; // ✅ guard before using context after await
+              AppSnackBar.success(context, 'Upload complete! ✅');
+              // AppSnackBar.showLoading(context, 'Uploading photo...');
+              // Future.delayed(
+              //   const Duration(seconds: 2),
+              //       () => AppSnackBar.success(context, 'Upload complete! ✅'),
+              // );
             },
           ),
         ],
@@ -571,7 +575,7 @@ class _CustomCodeCardState extends State<_CustomCodeCard> {
       if (_fontSize != 14) '  fontSize: $_fontSize,',
       if (_elevation != 6) '  elevation: $_elevation,',
       if (_customBg != null)
-        '  backgroundColor: const Color(0xFF${_customBg!.value.toRadixString(16).substring(2).toUpperCase()}),',
+        '  backgroundColor: const Color(0xFF${_customBg!.toARGB32().toRadixString(16).substring(2).toUpperCase()}),',
       if (!_showClose) '  showClose: false,',
       if (_showTimer) '  showTimer: true,',
       ');',
@@ -690,17 +694,17 @@ class _CustomCodeCardState extends State<_CustomCodeCard> {
         SizedBox(
           width: 80,
           child: Text(
-            '$label',
+            label,
             style: const TextStyle(color: Colors.white54, fontSize: 12, fontFamily: 'monospace'),
           ),
         ),
         Expanded(
           child: SliderTheme(
-            data: SliderThemeData(
+            data: const SliderThemeData(
               trackHeight: 2,
-              thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 6),
-              overlayShape: const RoundSliderOverlayShape(overlayRadius: 14),
-              activeTrackColor: const Color(0xFF58A6FF),
+              thumbShape: RoundSliderThumbShape(enabledThumbRadius: 6),
+              overlayShape: RoundSliderOverlayShape(overlayRadius: 14),
+              activeTrackColor: Color(0xFF58A6FF),
               inactiveTrackColor: Colors.white12,
               thumbColor: Colors.white,
               overlayColor: Colors.white10,
@@ -738,7 +742,7 @@ class _CustomCodeCardState extends State<_CustomCodeCard> {
         Switch(
           value: value,
           onChanged: (v) => setState(() => onChanged(v)),
-          activeColor: const Color(0xFF58A6FF),
+          activeThumbColor: const Color(0xFF58A6FF),
           materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
         ),
       ],
@@ -970,7 +974,7 @@ class _CustomCodeCardState extends State<_CustomCodeCard> {
                       onTap: () async {
                         final hexController = TextEditingController(
                           text: _customBg != null
-                              ? _customBg!.value.toRadixString(16).substring(2).toUpperCase()
+                              ? _customBg!.toARGB32().toRadixString(16).substring(2).toUpperCase()
                               : '',
                         );
                         await showDialog<void>(
@@ -1041,7 +1045,7 @@ class _CustomCodeCardState extends State<_CustomCodeCard> {
                             const SizedBox(width: 8),
                             Text(
                               _customBg != null
-                                  ? '#${_customBg!.value.toRadixString(16).substring(2).toUpperCase()}'
+                                  ? '#${_customBg!.toARGB32().toRadixString(16).substring(2).toUpperCase()}'
                                   : '# custom hex',
                               style: const TextStyle(
                                 color: Colors.white54,
